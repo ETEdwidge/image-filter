@@ -28,7 +28,21 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   //   the filtered image file [!!TIP res.sendFile(filteredpath); might be useful]
 
   /**************************************************************************** */
+  app.get("/filteredimage", async (req : express.Request, res : express.Response) => {
+    const {image_url}:{image_url:string} = req.query;
+    if (!image_url){
+      res.status(400).send("Erro: You are trying to submit an empty url expected output is /filteredimage?image_url={{}}");
+    } else {
+      await filterImageFromURL(image_url).then( function (image_input){
+        res.sendFile(image_input, () => {       
+          deleteLocalFiles([image_input]);       
+        });   
+      }).catch(function(print_error){
+        res.status(400).send(print_error);
+      });  
 
+    }
+  });
   //! END @TODO1
   
   // Root Endpoint
